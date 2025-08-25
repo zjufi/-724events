@@ -13,7 +13,19 @@ import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
 const Page = () => {
-  const {last} = useData()
+  //  //modif last/data 
+  const { data } = useData();
+  // ajout de const last qui va retrouver la derniere prestation//
+  const last =
+    data && data.events && data.events.length > 0
+      ? data.events.reduce((latest, current) => {
+        // Utiliser la date pour comparer et trouver la prestation la plus récente
+        const latestDate = new Date(latest.date);
+        const currentDate = new Date(current.date);
+
+        return currentDate > latestDate ? current : latest;
+      })
+      : null;
   return <>
     <header>
       <Menu />
