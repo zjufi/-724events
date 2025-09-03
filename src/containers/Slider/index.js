@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+
 import { useData } from "../../contexts/DataContext";
 import { getMonth } from "../../helpers/Date";
+
 
 import "./style.scss";
 
@@ -10,24 +12,37 @@ const Slider = () => {
   const byDateDesc = data?.focus.sort((evtA, evtB) =>
     new Date(evtA.date) > new Date(evtB.date) ? -1 : 1
   );
+
   const nextCard = () => {
-    setTimeout(
-      () => setIndex(index + 1 < byDateDesc.length ? index + 1 : 0),
-      5000
+    setIndex((prevIndex) =>
+      prevIndex < byDateDesc.length - 1 ? prevIndex + 1 : 0
     );
+
+    // NextCard : utilise la fonction setIndex pour mettre à jour l'index.
+    // L'index est incrémenté de 1 s'il est inférieur à la longueur du tableau trié,
+    // sinon il est réinitialisé à 0.
   };
-  useEffect(() => {
-    nextCard();
-  });
+
+  useEffect(
+    () => {
+      const intervalId = setInterval(nextCard, 5000);
+
+      return () => clearInterval(intervalId);
+    },
+    // eslint-disable-next-line
+    [index, byDateDesc]
+    // useEffect : exécute la fonction nextCard toutes les 5 secondes
+    // clearInterval : arrête l'exécution de la fonction nextCard
+    // La dépendance [index, byDateDesc] indique que l'effet doit être réexécuté lorsque l'une de ces valeurs change.
+  );
+
   return (
     <div className="SlideCardList">
       {byDateDesc?.map((event, idx) => (
-        <>
+        <div key={event.title}>
           <div
-            key={event.id}
-            className={`SlideCard SlideCard--${
-              index === idx ? "display" : "hide"
-            }`}
+            className={`SlideCard SlideCard--${index === idx ? "display" : "hide"
+              }`}
           >
             <img src={event.cover} alt="forum" />
             <div className="SlideCard__descriptionContainer">
@@ -42,15 +57,16 @@ const Slider = () => {
             <div className="SlideCard__pagination">
               {byDateDesc.map((_, radioIdx) => (
                 <input
-                  key={`${_.id}`}
+                  key={radioIdx}
                   type="radio"
+                  readOnly
                   name="radio-button"
                   checked={index === radioIdx}
                 />
               ))}
             </div>
           </div>
-        </>
+        </div>
       ))}
     </div>
   );
