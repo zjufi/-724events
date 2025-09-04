@@ -13,19 +13,10 @@ import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
 const Page = () => {
-  //  //modif last/data 
   const { data } = useData();
-  // ajout de const last qui va retrouver la derniere prestation//
-  const last =
-    data && data.events && data.events.length > 0
-      ? data.events.reduce((latest, current) => {
-        // Utiliser la date pour comparer et trouver la prestation la plus récente
-        const latestDate = new Date(latest.date);
-        const currentDate = new Date(current.date);
-
-        return currentDate > latestDate ? current : latest;
-      })
-      : null;
+  const last = data?.events.sort((evtA, evtB) =>
+    new Date(evtA.date) > new Date(evtB.date) ? -1 : 1
+  )[0];
   return <>
     <header>
       <Menu />
@@ -34,8 +25,8 @@ const Page = () => {
       <section className="SliderContainer">
         <Slider />
       </section>
-      <section className="ServicesContainer">
-        <h2 className="Title">Nos services</h2>
+      <section className="ServicesContainer" id="nos-services">
+        <h2 className="Title">Nos services </h2 >
         <p>Nous organisons des événements sur mesure partout dans le monde</p>
         <div className="ListContainer">
           <ServiceCard imageSrc="/images/priscilla-du-preez-Q7wGvnbuwj0-unsplash1.png">
@@ -63,11 +54,11 @@ const Page = () => {
           </ServiceCard>
         </div>
       </section>
-      <section className="EventsContainer">
+      <section className="EventsContainer" id="nos-realisations">
         <h2 className="Title">Nos réalisations</h2>
         <EventList />
       </section>
-      <section className="PeoplesContainer">
+      <section className="PeoplesContainer" id="notre-equipe">
         <h2 className="Title">Notre équipe</h2>
         <p>Une équipe d’experts dédiés à l’ogranisation de vos événements</p>
         <div className="ListContainer">
@@ -128,6 +119,7 @@ const Page = () => {
     <footer className="row">
       <div className="col presta">
         <h3>Notre derniére prestation</h3>
+        { last && last.cover &&
         <EventCard
           imageSrc={last?.cover}
           title={last?.title}
@@ -135,6 +127,7 @@ const Page = () => {
           small
           label="boom"
         />
+      }
       </div>
       <div className="col contact">
         <h3>Contactez-nous</h3>
